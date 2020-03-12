@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Mapan&#39;s Tech Blog</title>
+  
+  
+  <link href="/en/atom.xml" rel="self"/>
+  
+  <link href="https://mapan.tech/en/"/>
+  <updated>2019-02-01T10:44:43.717Z</updated>
+  <id>https://mapan.tech/en/</id>
+  
+  <author>
+    <name>MaPan</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Hello World</title>
+    <link href="https://mapan.tech/en/3eeb.html"/>
+    <id>https://mapan.tech/en/3eeb.html</id>
+    <published>2015-07-20T04:44:32.000Z</published>
+    <updated>2019-02-01T10:44:43.717Z</updated>
+    
+    <content type="html"><![CDATA[<p>The page is test page.</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;The page is test page.&lt;/p&gt;
+
+      
+    
+    </summary>
+    
+    
+  </entry>
+  
+</feed>
