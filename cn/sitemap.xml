@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type="text/xsl" href="sitemap.xsl"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+
+    <sitemap>
+        <loc>https://mapan.tech/cn/post-sitemap.xml</loc>
+        <lastmod>2020-03-14T01:04:59.453Z</lastmod>
+    </sitemap>
+
+    <sitemap>
+        <loc>https://mapan.tech/cn/page-sitemap.xml</loc>
+        <lastmod>2019-11-09T06:20:08.013Z</lastmod>
+    </sitemap>
+
+</sitemapindex>
+
