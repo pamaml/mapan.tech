@@ -6,7 +6,7 @@
   <link href="/cn/atom.xml" rel="self"/>
   
   <link href="https://mapan.tech/cn/"/>
-  <updated>2020-03-14T11:19:43.172Z</updated>
+  <updated>2020-03-14T11:21:50.761Z</updated>
   <id>https://mapan.tech/cn/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>希尔排序</title>
+    <link href="https://mapan.tech/cn/3c6c.html"/>
+    <id>https://mapan.tech/cn/3c6c.html</id>
+    <published>2020-03-14T08:01:06.000Z</published>
+    <updated>2020-03-14T11:21:50.761Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="希尔排序"><a href="#希尔排序" class="headerlink" title="希尔排序"></a>希尔排序</h1><p>希尔排序的思想是按照下标的一定增量分组，对魅族使用直接插入排序算法进行排序，随着增量逐渐减少，每组包含的关键词越来越多，当增量减少到1时，整个文件恰好被分成一组，算法终止。<br>简单来说就是按照一定步长分组，例如100个数排序，第一次分50组，每组两个数，第二次分25组，每组4个数，第三次分12组，第四次分6组，第五次分3组，第六次分1组。每一次分组后在组内进行排序。</p><p>排序流程：</p><p><img src="/cn/3c6c/srg453d.gif" alt="希尔排序"></p><p>代码实现：</p><p>首先分组，然后使用交换法：</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">shellSort</span><span class="params">(<span class="keyword">int</span>[] arr)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 第一个循环，对数组进行分组，直到gap=1为止</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> gap = arr.length / <span class="number">2</span>; gap &gt; <span class="number">0</span>; gap /= <span class="number">2</span>) &#123;</span><br><span class="line">        <span class="comment">//交替遍历所有组</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = gap; i &lt; arr.length; i++) &#123;</span><br><span class="line">            <span class="comment">// 组内排序，使用交换法</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = i - gap; j &gt;= <span class="number">0</span>; j -= gap) &#123;</span><br><span class="line">                <span class="keyword">if</span> (arr[j] &gt; arr[j + gap]) &#123;</span><br><span class="line">                    arr[j] = arr[j] ^ arr[j + gap];</span><br><span class="line">                    arr[j + gap] = arr[j] ^ arr[j + gap];</span><br><span class="line">                    arr[j] = arr[j] ^ arr[j + gap];</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>使用交换法，每次对比都要进行交换，效率比较低，内部排序的方式可以修改成直接插入排序。</p><p>分组，然后插入法（希尔排序）：</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">shellSort2</span><span class="params">(<span class="keyword">int</span>[] arr)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 第一个循环，对数组进行分组，直到gap=1为止</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> gap = arr.length / <span class="number">2</span>; gap &gt; <span class="number">0</span>; gap /= <span class="number">2</span>) &#123;</span><br><span class="line">        <span class="comment">// 交替遍历所有的组</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = gap; i &lt; arr.length; i++) &#123;</span><br><span class="line">            <span class="keyword">int</span> j = i;</span><br><span class="line">            <span class="keyword">int</span> temp = arr[j];</span><br><span class="line">            <span class="keyword">if</span> (arr[j] &lt; arr[j - gap]) &#123;</span><br><span class="line">                <span class="comment">// 移动数据，等待插入</span></span><br><span class="line">                <span class="keyword">while</span> (j - gap &gt;= <span class="number">0</span> &amp;&amp; temp &lt; arr[j - gap]) &#123;</span><br><span class="line">                    arr[j] = arr[j - gap];</span><br><span class="line">                    j -= gap;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 找到待插入的位置，插入数据</span></span><br><span class="line">                arr[j] = temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>希尔排序是对直接插入排序的更高效的改进版本，</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;希尔排序&quot;&gt;&lt;a href=&quot;#希尔排序&quot; class=&quot;headerlink&quot; title=&quot;希尔排序&quot;&gt;&lt;/a&gt;希尔排序&lt;/h1&gt;&lt;p&gt;希尔排序的思想是按照下标的一定增量分组，对魅族使用直接插入排序算法进行排序，随着增量逐渐减少，每组包含的关键词越来越多，当增
+      
+    
+    </summary>
+    
+      <category term="算法" scheme="https://mapan.tech/cn/categories/%E7%AE%97%E6%B3%95/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>希尔排序</title>
@@ -434,27 +457,6 @@
       
       
         &lt;p&gt;在大学时候自学过一丁点HTML的基础皮毛，对建站有那么一丁点的认识。作为自己业余爱好建立了本博客，简单的写下来搭建方法给搞技术的朋友们。&lt;/p&gt;&lt;h3 id=&quot;一、网站概念&quot;&gt;&lt;a href=&quot;#一、网站概念&quot; class=&quot;headerlink&quot; title=&quot;一、网站概
-      
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Git学习笔记</title>
-    <link href="https://mapan.tech/cn/2148.html"/>
-    <id>https://mapan.tech/cn/2148.html</id>
-    <published>2017-10-26T14:26:53.000Z</published>
-    <updated>2019-10-20T12:27:11.540Z</updated>
-    
-    <content type="html"><![CDATA[<p>一开始接触Git是搭建hexo 博客的时候，对Git没有什么理解和印象只感觉是一个上传东西的工具。<br>在刚来上海求职时候，一间公司面试官问我会不会Git，我说了解。现在已经学习了一部分的Git用法和指令，在这里整理记录下来，以备不时之需。</p><p>初始化本地仓库<br><code>git init</code></p><p>本地仓库添加到暂存区<br><code>git add .</code></p><p>提交到主要分支<br><code>git commint -m &quot;XXX&quot;</code></p><p>推送到远程仓库<br><code>git push oririn master</code></p><p>撤销暂存区的修改<br><code>git checkout -- xxx.xx(文件名)</code></p><p>查看当前仓库状态<br><code>git status</code></p><p>返回根目录<br><code>cd ../..</code><br>cd命令是切换目录的作用</p><p><code>git pull origin master</code>这条指令是把远程仓库拉回本地。<br>但是远程仓库比本地新的时候，需要执行下面一条，意思是把远程的仓库master同步到本地。<br><code>git pull origin master --allow-unrelated-histories</code></p><p>使用git add添加要提交的文件的时候，如果文件名是中文，会显示形如<code>274\232\350\256\256\346\200\273\347\273\223.txt</code>的乱码。<br>解决方案：<br>在bash提示符下输入：<br></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global core.quotepath false</span><br></pre></td></tr></table></figure><p></p><p>使用<code>git log</code>或者<code>git commit -m &quot;更新xx文件&quot;</code>显示提交的中文信息乱码。</p><p>解决方案：<br>设置git gui的界面编码<br>在bash提示符下输入：<br></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global gui.encoding utf-8</span><br></pre></td></tr></table></figure><p></p><p>使用<code>git push origin master</code>提交代码时候出现如下<code>warning</code>:<br></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">warning: LF will be replaced by CRLF in /*/*.***.</span><br><span class="line">The file will have its original line endings in your working directory.</span><br></pre></td></tr></table></figure><p></p><p>解决方案:<br>在bash提示符下输入：<br></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global core.autocrlf false  //禁止自动转换</span><br></pre></td></tr></table></figure><p></p><p>千万不要手贱执行下面的命令<br><code>rm -rf .git</code><br>这是删除<code>.git</code>文件夹的命令，删除了就不太容易找回来了，不会告诉你我是怎么知道的。<br>还有<code>git clean -df</code>这条指令。不要碰</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;一开始接触Git是搭建hexo 博客的时候，对Git没有什么理解和印象只感觉是一个上传东西的工具。&lt;br&gt;在刚来上海求职时候，一间公司面试官问我会不会Git，我说了解。现在已经学习了一部分的Git用法和指令，在这里整理记录下来，以备不时之需。&lt;/p&gt;&lt;p&gt;初始化本地仓库&lt;b
       
     
     </summary>
