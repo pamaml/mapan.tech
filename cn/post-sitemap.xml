@@ -8,8 +8,8 @@
     </url>
 
     <url>
-        <loc>https://mapan.tech/cn/f8df.html</loc>
-        <lastmod>2020-03-15T07:40:49.852Z</lastmod>
+        <loc>https://mapan.tech/cn/b8f1.html</loc>
+        <lastmod>2020-03-18T15:12:44.394Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -17,7 +17,15 @@
 
     <url>
         <loc>https://mapan.tech/cn/2c2a.html</loc>
-        <lastmod>2020-03-15T03:14:41.435Z</lastmod>
+        <lastmod>2020-03-18T12:36:27.389Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://mapan.tech/cn/f8df.html</loc>
+        <lastmod>2020-03-15T07:40:49.852Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
