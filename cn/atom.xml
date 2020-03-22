@@ -6,7 +6,7 @@
   <link href="/cn/atom.xml" rel="self"/>
   
   <link href="https://mapan.tech/cn/"/>
-  <updated>2020-03-22T05:58:51.296Z</updated>
+  <updated>2020-03-22T09:31:23.037Z</updated>
   <id>https://mapan.tech/cn/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Hive的UDTF函数</title>
+    <link href="https://mapan.tech/cn/6be3.html"/>
+    <id>https://mapan.tech/cn/6be3.html</id>
+    <published>2020-03-22T08:26:42.000Z</published>
+    <updated>2020-03-22T09:31:23.037Z</updated>
+    
+    <content type="html"><![CDATA[<p>在一些应用场景中，需要对一个字段进行分割，形成多个字段，比如日志信息使用#号连接字段，那么在导入数据仓库的时候，使用UDTF函数就显得比较方便和得心应手了。<br>在Hive的官网上，可以看到最UDTF的介绍是这样的：</p><blockquote><h3 id="GenericUDTF-Interface"><a href="#GenericUDTF-Interface" class="headerlink" title="GenericUDTF Interface"></a>GenericUDTF Interface</h3><p>A custom UDTF can be created by extending the GenericUDTF abstract class and then implementing the initialize, process, and possibly close methods. The initialize method is called by Hive to notify the UDTF the argument types to expect. The UDTF must then return an object inspector corresponding to the row objects that the UDTF will generate. Once initialize() has been called, Hive will give rows to the UDTF using the process() method. While in process(), the UDTF can produce and forward rows to other operators by calling forward(). Lastly, Hive will call the close() method when all the rows have passed to the UDTF.</p></blockquote><p>那么自定义UDTF函数需要继承<code>GenericUDTF</code> 抽象方法，实现<code>initialize</code>，<code>process</code>，<code>close</code> 这三个方法。</p><p>其中<code>initialize</code>方法中声明了Hive中需要的参数类型。</p><p><code>process</code>方法中进行我们所期望的操作，并调用<code>forward</code>方法把内容写到hive对应的行中。</p><p>当所有的行都写完后，会执行<code>close</code>方法。</p><p>下面代码实现了输入一个String类型的字符串，输入分隔符。会按照分隔符分割，之后把内容进行输出。</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> tech.mapan.hive.udtf;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.hive.ql.exec.UDFArgumentException;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.hive.ql.metadata.HiveException;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.hive.ql.udf.generic.GenericUDTF;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.hive.serde2.objectinspector.ObjectInspectorFactory;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.hive.serde2.objectinspector.StructObjectInspector;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExplodUDTF</span> <span class="keyword">extends</span> <span class="title">GenericUDTF</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ArrayList&lt;String&gt; outList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> StructObjectInspector <span class="title">initialize</span><span class="params">(StructObjectInspector argOIs)</span> <span class="keyword">throws</span> UDFArgumentException </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//1.定义输出数据的列名和类型</span></span><br><span class="line">        List&lt;String&gt; fieldNames = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        List&lt;ObjectInspector&gt; fieldOIs = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//2.添加输出数据的列名和类型</span></span><br><span class="line">        fieldNames.add(<span class="string">"lineToWord"</span>);</span><br><span class="line">        fieldOIs.add(PrimitiveObjectInspectorFactory.javaStringObjectInspector);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ObjectInspectorFactory.getStandardStructObjectInspector(fieldNames, fieldOIs);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(Object[] args)</span> <span class="keyword">throws</span> HiveException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//1.获取原始数据</span></span><br><span class="line">        String arg = args[<span class="number">0</span>].toString();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//2.获取数据传入的第二个参数，此处为分隔符</span></span><br><span class="line">        String splitKey = args[<span class="number">1</span>].toString();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//3.将原始数据按照传入的分隔符进行切分</span></span><br><span class="line">        String[] fields = arg.split(splitKey);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//4.遍历切分后的结果，并写出</span></span><br><span class="line">        <span class="keyword">for</span> (String field : fields) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//集合为复用的，首先清空集合</span></span><br><span class="line">            outList.clear();</span><br><span class="line"></span><br><span class="line">            <span class="comment">//将每一个单词添加至集合</span></span><br><span class="line">            outList.add(field);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//将集合内容写出</span></span><br><span class="line">            forward(outList);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> HiveException </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>打好jar包并放到对应目录后，创建函数，尝试执行一句简单的，可以看到<code>1001#Jack#18#1999-01-02#Male</code>已经被按照期望的形式分割出来。其中<code>linetoword</code>是在UDTF函数中定义的列名</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">hive (default)&gt; create <span class="keyword">function</span> mp_explod as <span class="string">"tech.mapan.hive.udtf.ExplodUDTF"</span>;</span><br><span class="line">OK</span><br><span class="line">Time taken: 0.03 seconds</span><br><span class="line"></span><br><span class="line">hive (default)&gt; select mp_explod(<span class="string">'1001#Jack#18#1999-01-02#Male'</span>,<span class="string">'#'</span>);</span><br><span class="line">OK</span><br><span class="line">linetoword</span><br><span class="line">1001</span><br><span class="line">Jack</span><br><span class="line">18</span><br><span class="line">1999-01-02</span><br><span class="line">Male</span><br><span class="line">Time taken: 12.29 seconds, Fetched: 5 row(s)</span><br></pre></td></tr></table></figure><p>附：<a href="6be3/udtf-1.0-SNAPSHOT.jar" target="_blank">jar包</a></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;在一些应用场景中，需要对一个字段进行分割，形成多个字段，比如日志信息使用#号连接字段，那么在导入数据仓库的时候，使用UDTF函数就显得比较方便和得心应手了。&lt;br&gt;在Hive的官网上，可以看到最UDTF的介绍是这样的：&lt;/p&gt;&lt;blockquote&gt;&lt;h3 id=&quot;Gene
+      
+    
+    </summary>
+    
+      <category term="数据仓库" scheme="https://mapan.tech/cn/categories/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>Hive的UDF函数</title>
@@ -439,29 +462,6 @@
     </summary>
     
       <category term="数据库" scheme="https://mapan.tech/cn/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>密码和方言</title>
-    <link href="https://mapan.tech/cn/3e9.html"/>
-    <id>https://mapan.tech/cn/3e9.html</id>
-    <published>2017-12-26T12:38:10.000Z</published>
-    <updated>2019-10-20T12:40:16.560Z</updated>
-    
-    <content type="html"><![CDATA[<p>今天在思考一个问题，如何加密数据才能让自己的通信更安全。诸如我们所使用的微信和QQ、短信等，均有可能被第三方监视和窃取。在这个大数据的时代，自己怎么才能不<strong>被</strong>大数据了呢？</p><p>今天上班走在路上听见前面阿姨大妈用上海话叽里呱啦的说话，我一句也听不懂。忽然脑袋里就跳出一个想法，对我来说这不就是所谓的加密了么？</p><p>如果把每个人都看成一个系统，那么两个系统之间的通信，可以被中间者窃听，但是能不能解码出其中的含义就不一定了。</p><blockquote><p>普通话就是为了人与人沟通方便，而约定的一种<code>开源</code>的沟通传递工具语言。</p><p>每个人都会说，能听得懂。对每个人来说，相当于明文。</p><p>对外地人来说，上海话听不懂，在自己的语言系统中，听不懂。上海话就是一个经过加密的信息，密钥就是上海话的说法，说上海话就是加密，听上海话就是解密。</p><p>上海人即能听得懂，又会说的出。这样就完成了最基本的加密解密。</p></blockquote><p>抛开通信的原理不讲，只当通信系统是一个黑盒，微信和QQ是一个黑盒。在这个黑盒实现通信的过程中，是经过第三方的服务器的，数据是有可能<strong>被</strong>大数据的。</p><p>为了保障被践踏的隐私权，我们怎么办呢？</p><p>回到上海阿姨说上海话，如果上海话只有谈话间的阿姨两个人可以听得懂，那么这次谈话就是安全的。在这次安全的通信中，上海话充当了密钥的作用。</p><p>由于上海话即可以说也可以听，所以就充当了加密和解密的两个作用，所以属于对称加密。</p><blockquote><p>这样一来，上海话就是属于一种对称加密算法。</p></blockquote><p>我在想，可以借助如微信、QQ等现有的通信工具，实现简单的通信加密。在发送信息之前，发送的信息经过RSA非对称算法加密，对方收到的消息是一堆乱码。经过密钥解密之后，才可以看到真实的信息。实现类似的效果：</p><blockquote><p>A: Gjhk89kjh89HKJ)6%76GHBJk7T%^90hlkG&amp;^</p><p>B: &amp;(HG^8ThhniJ09(yhKH89^Y&amp;^)ijlGyih()uij)</p><p>A: asdBH和ugdas82^9780HJ#@56gh^Jk0U5</p><p>B: #$khj)j^JjY8jLK;p-)978&amp;^667yh^%%$</p><p>A: HJh&amp;uhy速JKHJuu6hH”sd9kG%j%ijH_=Its</p><p>B: ASHGd876asd5%$^f%^TTG7G&amp;g7y78T6rt%R%5e</p></blockquote><hr><p>自己太菜，并没有技术能力实现。只是灵机一动的想法，如果有机会再去学习相关知识，先马一下自己灵感。</p><hr><p>琢磨了一下，需要安卓手机安装Xposed，还要写相对应的框架，自己微信和QQ还有被封的风险，还是算了吧。</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;今天在思考一个问题，如何加密数据才能让自己的通信更安全。诸如我们所使用的微信和QQ、短信等，均有可能被第三方监视和窃取。在这个大数据的时代，自己怎么才能不&lt;strong&gt;被&lt;/strong&gt;大数据了呢？&lt;/p&gt;&lt;p&gt;今天上班走在路上听见前面阿姨大妈用上海话叽里呱啦的说话，我
-      
-    
-    </summary>
-    
-      <category term="灵感一现" scheme="https://mapan.tech/cn/categories/%E7%81%B5%E6%84%9F%E4%B8%80%E7%8E%B0/"/>
     
     
   </entry>
