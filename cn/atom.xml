@@ -6,7 +6,7 @@
   <link href="/cn/atom.xml" rel="self"/>
   
   <link href="https://mapan.tech/cn/"/>
-  <updated>2020-03-21T14:14:22.345Z</updated>
+  <updated>2020-03-22T03:12:13.896Z</updated>
   <id>https://mapan.tech/cn/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Hive的UDF函数</title>
+    <link href="https://mapan.tech/cn/d960.html"/>
+    <id>https://mapan.tech/cn/d960.html</id>
+    <published>2020-03-21T14:36:35.000Z</published>
+    <updated>2020-03-22T03:12:13.896Z</updated>
+    
+    <content type="html"><![CDATA[<p>Hive中给了很多系统函数，<a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF" target="_blank">官网</a> 给了很多函数可以参考。但是复杂的业务中，官方函数并不一定能满足特定化的需求，这时可以自定义函数来满足需求。</p><p>参考：官网中的关于UDF部分的<a href="https://cwiki.apache.org/confluence/display/Hive/HivePlugins" target="_blank">链接</a></p><h3 id="1-在IDEA中创建一个项目，配置pom-xml-添加依赖如下："><a href="#1-在IDEA中创建一个项目，配置pom-xml-添加依赖如下：" class="headerlink" title="1.  在IDEA中创建一个项目，配置pom.xml 添加依赖如下："></a>1. 在IDEA中创建一个项目，配置pom.xml 添加依赖如下：</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.hive<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hive-exec<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.1.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure><h3 id="2-创建一个类，例如创建一个把字符串全部转换为小写的UDF"><a href="#2-创建一个类，例如创建一个把字符串全部转换为小写的UDF" class="headerlink" title="2. 创建一个类，例如创建一个把字符串全部转换为小写的UDF"></a>2. 创建一个类，例如创建一个把字符串全部转换为小写的UDF</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> tech.mapan.hive;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.hive.ql.exec.UDF;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@program</span>: UDF</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: UDF函数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: MaPan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@create</span>: 2020-03-22 09:13</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Lower</span> <span class="keyword">extends</span> <span class="title">UDF</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">evaluate</span> <span class="params">(String s)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (s == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> s.toLowerCase();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h3 id="3-打jar包，把jar包放在-opt-local-hive-lib"><a href="#3-打jar包，把jar包放在-opt-local-hive-lib" class="headerlink" title="3. 打jar包，把jar包放在 /opt/local/hive/lib"></a>3. 打jar包，把jar包放在 /opt/local/hive/lib</h3><p>这一步就不在赘述，默认大家都会</p><h3 id="4-配置环境变量"><a href="#4-配置环境变量" class="headerlink" title="4. 配置环境变量"></a>4. 配置环境变量</h3><p>CDH<a href="https://docs.cloudera.com/documentation/enterprise/latest/topics/cm_mc_hive_udf.html#hive-aux-jars-dir" target="_blank">官网</a>写的在hive-site.xml中配置<code>hive.aux.jars.path</code>，但是我配置完后并没有生效，不过官网写</p><blockquote><p>The directory location is set in the environment as <code>HIVE_AUX_JARS_PATH</code> and will generally override the <code>hive.aux.jars.path</code> property set in XML files, even if <code>hive.aux.jars.path</code> is set in an advanced configuration snippet.</p></blockquote><p>意思就是环境变量的优先级要高于XML，所以建议直接配置环境变量。</p><p>在root用户下：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/profile.d/hive.sh </span><br><span class="line"><span class="meta">#</span><span class="bash"> 添加如下内容并保存</span></span><br><span class="line">export HIVE_AUX_JARS_PATH=/opt/local/hive/lib</span><br><span class="line">export PATH=$PATH:$HIVE_AUX_JARS_PATH</span><br></pre></td></tr></table></figure><p>执行<code>source /etc/profile</code>刷新环境变量。</p><h3 id="5-进入hive-cli中，创建函数"><a href="#5-进入hive-cli中，创建函数" class="headerlink" title="5. 进入hive-cli中，创建函数"></a>5. 进入hive-cli中，创建函数</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">hive (default)&gt; create <span class="keyword">function</span> mylower as <span class="string">"tech.mapan.hive.Lower"</span>;</span><br><span class="line">OK</span><br><span class="line">Time taken: 0.285 seconds</span><br><span class="line"></span><br><span class="line">hive (default)&gt;  select mylower(<span class="string">"HELLO WORLD"</span>);</span><br><span class="line">OK</span><br><span class="line">_c0</span><br><span class="line">hello world</span><br><span class="line">Time taken: 0.18 seconds, Fetched: 1 row(s)</span><br></pre></td></tr></table></figure><p>这样就向系统添加了一个函数 mylower(), 退出hive-cli再次进入依然生效。</p><p>附：jar包<a href="d960/UDF-1.0-SNAPSHOT.jar" target="_blank">下载</a></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;Hive中给了很多系统函数，&lt;a href=&quot;https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF&quot; target=&quot;_blank&quot;&gt;官网&lt;/a&gt; 给了很多函数可以参考。但是复杂的业务中，官方
+      
+    
+    </summary>
+    
+      <category term="数据仓库" scheme="https://mapan.tech/cn/categories/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>HQL必会50题</title>
@@ -439,29 +462,6 @@
     </summary>
     
       <category term="灵感一现" scheme="https://mapan.tech/cn/categories/%E7%81%B5%E6%84%9F%E4%B8%80%E7%8E%B0/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Hadoop集群优化</title>
-    <link href="https://mapan.tech/cn/929b.html"/>
-    <id>https://mapan.tech/cn/929b.html</id>
-    <published>2017-12-26T02:46:02.000Z</published>
-    <updated>2019-12-28T05:31:19.434Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="HDFS小文件的影响："><a href="#HDFS小文件的影响：" class="headerlink" title="HDFS小文件的影响："></a>HDFS小文件的影响：</h2><ol><li>影响NameNode的寿命，文件的元数据存储在NameNode的内存当中</li><li>音响计算引擎的任务数量，比如每个小的文件都会生成一个Map任务</li></ol><h2 id="数据输入小文件处理："><a href="#数据输入小文件处理：" class="headerlink" title="数据输入小文件处理："></a>数据输入小文件处理：</h2><ol><li>合并小文件：对小文件进行归档（Har）、自定义Inputformat将小文件存储成SequenceFile文件。</li><li>采用ConbinFileInputFormat来作为输入，解决输入端大量小文件场景。</li><li>对于大量小文件Job，可以开启JVM重用。</li></ol><h2 id="Map阶段"><a href="#Map阶段" class="headerlink" title="Map阶段"></a>Map阶段</h2><ol><li>增大环形缓冲区大小。由100m扩大到200m</li><li>增大环形缓冲区溢写的比例。由80%扩大到90%</li><li>减少对溢写文件的merge次数。</li><li>不影响实际业务的前提下，采用Combiner提前合并，减少 I/O。</li></ol><h2 id="Reduce阶段"><a href="#Reduce阶段" class="headerlink" title="Reduce阶段"></a>Reduce阶段</h2><ol><li><p>合理设置Map和Reduce数：两个都不能设置太少，也不能设置太多。太少，会导致Task等待，延长处理时间；太多，会导致 Map、Reduce任务间竞争资源，造成处理超时等错误。</p></li><li><p>设置Map、Reduce共存：调整slowstart.completedmaps参数，使Map运行到一定程度后，Reduce也开始运行，减少Reduce的等待时间。</p></li><li>规避使用Reduce，因为Reduce在用于连接数据集的时候将会产生大量的网络消耗。</li><li>增加每个Reduce去Map中拿数据的并行数</li><li>集群性能可以的前提下，增大Reduce端存储数据内存的大小。</li></ol><h2 id="IO传输"><a href="#IO传输" class="headerlink" title="IO传输"></a>IO传输</h2><ol><li>采用数据压缩的方式，减少网络IO的的时间。安装Snappy和LZOP压缩编码器。</li><li>使用SequenceFile二进制文件</li></ol><h2 id="整体"><a href="#整体" class="headerlink" title="整体"></a>整体</h2><ol><li>MapTask默认内存大小为1G，可以增加MapTask内存大小为4-5g</li><li>ReduceTask默认内存大小为1G，可以增加ReduceTask内存大小为4-5g</li><li>可以增加MapTask的cpu核数，增加ReduceTask的CPU核数</li><li>增加每个Container的CPU核数和内存大小</li><li>调整每个Map Task和Reduce Task最大重试次数</li></ol>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h2 id=&quot;HDFS小文件的影响：&quot;&gt;&lt;a href=&quot;#HDFS小文件的影响：&quot; class=&quot;headerlink&quot; title=&quot;HDFS小文件的影响：&quot;&gt;&lt;/a&gt;HDFS小文件的影响：&lt;/h2&gt;&lt;ol&gt;&lt;li&gt;影响NameNode的寿命，文件的元数据存储在NameNo
-      
-    
-    </summary>
-    
-      <category term="Hadoop" scheme="https://mapan.tech/cn/categories/Hadoop/"/>
     
     
   </entry>
