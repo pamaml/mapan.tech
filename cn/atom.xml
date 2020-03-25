@@ -6,7 +6,7 @@
   <link href="/cn/atom.xml" rel="self"/>
   
   <link href="https://mapan.tech/cn/"/>
-  <updated>2020-03-23T00:02:17.119Z</updated>
+  <updated>2020-03-25T00:05:41.744Z</updated>
   <id>https://mapan.tech/cn/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>二分查找</title>
+    <link href="https://mapan.tech/cn/a77d.html"/>
+    <id>https://mapan.tech/cn/a77d.html</id>
+    <published>2020-03-24T23:56:24.000Z</published>
+    <updated>2020-03-25T00:05:41.744Z</updated>
+    
+    <content type="html"><![CDATA[<p>在学习Java的最初阶段，我们应该都写过一个猜数字的小程序，随机生成一个数字，让我们输入来猜，其实里面就用到了二分查找的思想。</p><p><img src="/cn/a77d/binarysearch.png" alt="binarysearch"></p><p>二分查找的思想：</p><ol><li>首先确定该数组的中间下表 mid = (left+right)/2；</li><li>然后让需要查找的数findVal和arr[mid]比较；</li><li>若findVal&gt;arr[mid],说明要查找的数在mid的右边，因此需要递归的向右查找；</li><li>若findVal&lt;arr[mid],说明要查找的数在mid的左边，因此需要递归的向左查找；</li><li>若findVal==arr[mid],说明要查找的数找到，就返回。</li></ol><p>结束递归条件:</p><ol><li>找到要查找的数，结束递归</li><li>递归完整个数组，仍然没有找到findVal,也需要结束递归，此时left&gt;right</li></ol><p>代码实现：<br></p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> arr     要查找的数组</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> left    左边的索引</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> right   右边的索引</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> findVal 要查找的值</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 如果找到就返回下边，如果没有找到就返回-1</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">binarySearch</span><span class="params">(<span class="keyword">int</span>[] arr, <span class="keyword">int</span> left, <span class="keyword">int</span> right, <span class="keyword">int</span> findVal)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (left &gt; right) &#123;</span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> mid = (left + right) / <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">if</span> (findVal &gt; arr[mid]) &#123;</span><br><span class="line">            <span class="keyword">return</span> binarySearch(arr, mid + <span class="number">1</span>, right, findVal);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (findVal &lt; arr[mid]) &#123;</span><br><span class="line">            <span class="keyword">return</span> binarySearch(arr, left, mid - <span class="number">1</span>, findVal);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> mid;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure><p></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;在学习Java的最初阶段，我们应该都写过一个猜数字的小程序，随机生成一个数字，让我们输入来猜，其实里面就用到了二分查找的思想。&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;/cn/a77d/binarysearch.png&quot; alt=&quot;binarysearch&quot;&gt;&lt;/p&gt;&lt;p&gt;二分查找
+      
+    
+    </summary>
+    
+      <category term="算法" scheme="https://mapan.tech/cn/categories/%E7%AE%97%E6%B3%95/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>Hive的UDTF函数</title>
@@ -439,29 +462,6 @@
       
     
     </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>hive管理表和外部表</title>
-    <link href="https://mapan.tech/cn/9f73.html"/>
-    <id>https://mapan.tech/cn/9f73.html</id>
-    <published>2018-01-02T12:35:12.000Z</published>
-    <updated>2019-10-20T11:48:29.879Z</updated>
-    
-    <content type="html"><![CDATA[<p>管理表<br>我们目前所创建的标都是所谓的管理表，有时也会被称为内部表，因为这种表，Hive会控制着数据的生命周期。正如我们所看见的，Hive默认情况下会将这些表的数据存储在由配置项hive.metastore.dir所定义的目录的子目录下。</p><p>管理表不方便和其他工作共享数据，例如，假设我们有一份有pig或者其他工具创建并且主要有这一工具使用的数据，同时我们还想使用Hive在这份数据上执行一些查询，可是并没有给与Hive对数据的所有权，我们可以创建一个外部表指向这份数据，而并不需要对其拥有所有权。</p><p>外部表<br>因为表是外部的，所以Hive并非认为其完全拥有这份数据。因此，删除该表并不会删除掉这份数据，不过描述表的元数据信息会被删除掉。</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;管理表&lt;br&gt;我们目前所创建的标都是所谓的管理表，有时也会被称为内部表，因为这种表，Hive会控制着数据的生命周期。正如我们所看见的，Hive默认情况下会将这些表的数据存储在由配置项hive.metastore.dir所定义的目录的子目录下。&lt;/p&gt;&lt;p&gt;管理表不方便和其他
-      
-    
-    </summary>
-    
-      <category term="数据库" scheme="https://mapan.tech/cn/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
     
     
   </entry>
