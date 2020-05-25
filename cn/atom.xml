@@ -6,7 +6,7 @@
   <link href="/cn/atom.xml" rel="self"/>
   
   <link href="https://mapan.tech/cn/"/>
-  <updated>2020-05-17T13:21:03.202Z</updated>
+  <updated>2020-05-24T23:58:07.554Z</updated>
   <id>https://mapan.tech/cn/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>数据仓库相关概念</title>
+    <link href="https://mapan.tech/cn/788d.html"/>
+    <id>https://mapan.tech/cn/788d.html</id>
+    <published>2020-05-24T13:11:46.000Z</published>
+    <updated>2020-05-24T23:58:07.554Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="什么是OLAP-OLTP"><a href="#什么是OLAP-OLTP" class="headerlink" title="什么是OLAP/OLTP?"></a>什么是OLAP/OLTP?</h1><p>联机事务处理：OLTP，全称On-line Transaction Processing</p><p>联机分析处理：OLAP，全称On-line Analytical Processing</p><p><img src="/cn/788d/image-20200524105954281.png" alt="image-20200524105954281"></p><p>孤立性我们常常称为隔离性。</p><p>上钻：从粗粒度往细粒度进行细化</p><p>上卷：从细粒度往粗粒度进行汇总</p><p>多个维度的数据形成了数据立方体，我们在对部分维度进行限制的时候，就相当于对数据立方体进行了切块，当限制部分维度的值为固定值的时候，数据立方体就被切成了片，非常形象化。</p><p>旋转：把行和列进行对调，例如按照地区统计各产品销量信息，和按照产品统计各地区销量。</p><p><img src="/cn/788d/image-20200524113843986.png" alt="image-20200524113843986"></p><p>OLAP是业务分析导向，一般不符合范式规则，常常有很多数据冗余，传递依赖等，优点是查询效率很高，很少的join操作，一般一张业务报表仅来源于一张底层表，常见于各种即席分析系统如Kylin，Druid等。早期也会使用关系型数据库，现在常见使用分布式集群进行处理，如Hive等。</p><p>OLTP是业务效率导向，几乎没有数据冗余，表非常多，各种维表码表，符合三范式，增删改查频繁，常见如ERP，SAP，企业OA等系统。一般使用关系型数据库，MySQL，Oracle等。</p><p>数仓整体开发流程</p><p><img src="/cn/788d/image-20200524121215144.png" alt="image-20200524121215144"></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;什么是OLAP-OLTP&quot;&gt;&lt;a href=&quot;#什么是OLAP-OLTP&quot; class=&quot;headerlink&quot; title=&quot;什么是OLAP/OLTP?&quot;&gt;&lt;/a&gt;什么是OLAP/OLTP?&lt;/h1&gt;&lt;p&gt;联机事务处理：OLTP，全称On-line Transa
+      
+    
+    </summary>
+    
+      <category term="数据仓库" scheme="https://mapan.tech/cn/categories/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>PostgreSql学习</title>
@@ -444,29 +467,6 @@
       
       
         &lt;p&gt;在多维数据仓库中，保存度量值的详细值或事实的表称为“事实表”。在事实表中，每个度量值都有一个列，不同事实表将有不同的度量值。&lt;/p&gt;&lt;p&gt;事实表中的度量主要分为三种：可加、半可加、不可加&lt;/p&gt;&lt;ul&gt;&lt;li&gt;可加的度量&lt;br&gt;言外之意，既可以在任意维度下进行累加，例如订单
-      
-    
-    </summary>
-    
-      <category term="数据仓库" scheme="https://mapan.tech/cn/categories/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>范式建模和维度建模对比</title>
-    <link href="https://mapan.tech/cn/3264.html"/>
-    <id>https://mapan.tech/cn/3264.html</id>
-    <published>2019-10-05T10:17:02.000Z</published>
-    <updated>2020-05-24T10:45:27.059Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="范式建模"><a href="#范式建模" class="headerlink" title="范式建模"></a>范式建模</h1><p>该方法的主要由Inmon所提倡，主要利用关系型数据库进行数据仓库的建设，且模型的建设方法和业务系统的数据模型比较类似<br>经典范式理论中，一个符合第三范式的关系必须具有以下三个条件：</p><ul><li>1NF：每个属性值唯一，不具有多义性；</li><li>2NF：每个非主属性必须完全依赖于整个主键，而非主键的一部分；</li><li>3NF：每个非主属性不能依赖于其他关系中的属性。</li></ul><h2 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h2><ul><li>节约存储</li><li>结构清晰</li><li>易于理解</li><li>适合关系型数据库</li></ul><h2 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h2><ul><li>构建比较繁琐</li><li>查询复杂</li><li>不适合构建在大数据分布式环境下</li></ul><p>虽然有这些缺点，但是范式建模的理论，仍然是需要我们去熟练掌握。原因有如几点：</p><ul><li>数据仓库的上游有相当一部分数据源是业务数据库，而这些业务数据库，其理论一般基于范式理论；</li><li>数据源的规范定义需要我们了解范式理论；</li><li>数据仓库下游系统比如报表系统设计时，可能会用到范式理论。</li></ul><h1 id="维度建模"><a href="#维度建模" class="headerlink" title="维度建模"></a>维度建模</h1><p>范式由于存在上述的问题，Kimball根据自己的经验，提出的维度建模的理论，即数据都可以抽象成事实和维度，维度为观察事物的角度，事实为对应某粒度下的度量值，一般，维度建模的步骤如下：</p><ul><li>1.选择业务过程<br>业务过程是-系列操作活动，转换为事实表中的事实，例如每个月每个账单快照</li><li>2.声明粒度<br>粒度是指事实表中的一行代表什么。同一事实表不要混用粒度，最好从最小粒度开始设计维度，因其能承受用户无法预知的查询需求。</li><li>3.确认维度<br>维度是根据粒度将表分开成多个维度表，即从不同维度（角度）去看。<br>维度是数据仓库的灵魂，是BI的入口和驱动</li><li>4.确认事实<br>事实是指一种在某个粒度下的度量，例如在销售维度中，销量和总额是良好的事实，而商店经理的工资则不允许出现在该维度中。</li></ul><h2 id="优点：-1"><a href="#优点：-1" class="headerlink" title="优点："></a>优点：</h2><ul><li>方便使用</li><li>适合大数据下的数据处理</li><li>适合进行OL AP操作</li></ul><h2 id="缺点：-1"><a href="#缺点：-1" class="headerlink" title="缺点："></a>缺点：</h2><ul><li>维度补全造成的数据存储的浪费</li><li>维度变化造成的数据更新量大</li><li>与范式理论差异很大，是典型的反三范式</li></ul><h1 id="维度建模举例"><a href="#维度建模举例" class="headerlink" title="维度建模举例"></a>维度建模举例</h1><p>假设我们要构建的是一张订单表，那业务过程即为这个具体是哪种业务场景下的订单数据;</p><p>粒度即为该表中的每一 条数据具体是细化到如何的程度，是一条数据代表一个订单还是多个订单;</p><p>维度即为该订单有哪些的附属信息，比方说订单类型、支付方式、城市信心、日期信息等等;</p><p>事实是指具体的订单量的数值。</p><p>那么，我们可以假设，这个订单表的基础信息包括：</p><div class="table-container"><table><thead><tr><th style="text-align:left">编号</th><th style="text-align:left">字段</th></tr></thead><tbody><tr><td style="text-align:left">01</td><td style="text-align:left">订单ID</td></tr><tr><td style="text-align:left">02</td><td style="text-align:left">发货人ID</td></tr><tr><td style="text-align:left">03</td><td style="text-align:left">收件人ID</td></tr><tr><td style="text-align:left">04</td><td style="text-align:left">发货时间</td></tr><tr><td style="text-align:left">05</td><td style="text-align:left">发货地点</td></tr><tr><td style="text-align:left">06</td><td style="text-align:left">快递单号</td></tr><tr><td style="text-align:left">07</td><td style="text-align:left">物品件数</td></tr><tr><td style="text-align:left">08</td><td style="text-align:left">订单总金额</td></tr><tr><td style="text-align:left">09</td><td style="text-align:left">订单状态</td></tr><tr><td style="text-align:left">10</td><td style="text-align:left">下单时间</td></tr><tr><td style="text-align:left">11</td><td style="text-align:left">支付订单号</td></tr><tr><td style="text-align:left">12</td><td style="text-align:left">支付时间</td></tr><tr><td style="text-align:left">13</td><td style="text-align:left">支付状态</td></tr><tr><td style="text-align:left">14</td><td style="text-align:left">收货时间</td></tr><tr><td style="text-align:left">15</td><td style="text-align:left">收货状态</td></tr></tbody></table></div><p><strong>业务过程</strong>：用户购买商品的订单记录表<br><strong>申明粒度</strong>：每一条记录代表一个有效订单<br><strong>确认维度</strong>：商户维度、用户维度、支付维度、收货维度<br><strong>确认事实</strong>：订单总金额</p><p>通过对不同的维度进行统计组合，我们就会得到一个多维数据集，来从多角度观察我们的业务过程的好坏情况。</p><hr><p>参考：<a href="https://www.bilibili.com/video/BV1Z4411m7NV?p=6">https://www.bilibili.com/video/BV1Z4411m7NV?p=6</a></p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h1 id=&quot;范式建模&quot;&gt;&lt;a href=&quot;#范式建模&quot; class=&quot;headerlink&quot; title=&quot;范式建模&quot;&gt;&lt;/a&gt;范式建模&lt;/h1&gt;&lt;p&gt;该方法的主要由Inmon所提倡，主要利用关系型数据库进行数据仓库的建设，且模型的建设方法和业务系统的数据模型比较类似&lt;br&gt;
       
     
     </summary>
