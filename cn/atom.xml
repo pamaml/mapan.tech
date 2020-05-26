@@ -6,7 +6,7 @@
   <link href="/cn/atom.xml" rel="self"/>
   
   <link href="https://mapan.tech/cn/"/>
-  <updated>2020-05-24T23:58:07.554Z</updated>
+  <updated>2020-05-26T13:56:45.869Z</updated>
   <id>https://mapan.tech/cn/</id>
   
   <author>
@@ -17,19 +17,40 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>数据仓库相关概念</title>
-    <link href="https://mapan.tech/cn/788d.html"/>
-    <id>https://mapan.tech/cn/788d.html</id>
-    <published>2020-05-24T13:11:46.000Z</published>
-    <updated>2020-05-24T23:58:07.554Z</updated>
+    <title>Hive常见开发错误总结</title>
+    <link href="https://mapan.tech/cn/3552.html"/>
+    <id>https://mapan.tech/cn/3552.html</id>
+    <published>2020-05-26T13:43:42.000Z</published>
+    <updated>2020-05-26T13:56:45.869Z</updated>
     
-    <content type="html"><![CDATA[<h1 id="什么是OLAP-OLTP"><a href="#什么是OLAP-OLTP" class="headerlink" title="什么是OLAP/OLTP?"></a>什么是OLAP/OLTP?</h1><p>联机事务处理：OLTP，全称On-line Transaction Processing</p><p>联机分析处理：OLAP，全称On-line Analytical Processing</p><p><img src="/cn/788d/image-20200524105954281.png" alt="image-20200524105954281"></p><p>孤立性我们常常称为隔离性。</p><p>上钻：从粗粒度往细粒度进行细化</p><p>上卷：从细粒度往粗粒度进行汇总</p><p>多个维度的数据形成了数据立方体，我们在对部分维度进行限制的时候，就相当于对数据立方体进行了切块，当限制部分维度的值为固定值的时候，数据立方体就被切成了片，非常形象化。</p><p>旋转：把行和列进行对调，例如按照地区统计各产品销量信息，和按照产品统计各地区销量。</p><p><img src="/cn/788d/image-20200524113843986.png" alt="image-20200524113843986"></p><p>OLAP是业务分析导向，一般不符合范式规则，常常有很多数据冗余，传递依赖等，优点是查询效率很高，很少的join操作，一般一张业务报表仅来源于一张底层表，常见于各种即席分析系统如Kylin，Druid等。早期也会使用关系型数据库，现在常见使用分布式集群进行处理，如Hive等。</p><p>OLTP是业务效率导向，几乎没有数据冗余，表非常多，各种维表码表，符合三范式，增删改查频繁，常见如ERP，SAP，企业OA等系统。一般使用关系型数据库，MySQL，Oracle等。</p><p>数仓整体开发流程</p><p><img src="/cn/788d/image-20200524121215144.png" alt="image-20200524121215144"></p>]]></content>
+    <content type="html"><![CDATA[<p>常见错误总结</p><ul><li>1、开发时仔细检查脚本，避免低级错误，比如缺少逗号，有重复字段，脚本文件保存的不是UTF8无BOM，或不是UNIX格式，Tab没有转为空格等；</li></ul><p><img src="/cn/3552/image-20200526215250522.png" alt="image-20200526215250522"></p><ul><li>2、注意一些Hive性能参数的设置，比如 MapJoin的打开、并行、动态分区的打开，还要防止数据倾斜、迪卡尔积，特别是不要数据倾斜；</li><li>3、Job运行失败并且不出现日志，检查是否是脚本文件名有中文或有空格；</li><li>4、Job运行慢，检查是数据倾斜还是资源不够的原因，如果进度在99％半小时还没动就考虑是数据倾斜了，如果 MapReduce运行进度很均匀但是很慢，要看日志，包括Map的日志和Reduce志和的日志，看每个map或Reduce的start的时间间隔是否很长，如果很长则考虑是资源不够。如果elapsed时间内有很长的 tasks，且时间不均匀，则考虑是数据倾斜了；</li><li>5、在配置任务调度的时候，需要确认被依赖的任务在任务调度平台上是否存在。依赖任务的跑数时间是否满足自己的需求，比如可能会出现上游表本身跑数时间设置比较晚，导致我们的作业等待时间长。</li><li>6、如果正常调度任务显示已完成，但结果表中没有数据，手工下发任务重新跑数后，数据正常。则可以断定任务依赖配置有问题，依赖任务配置少了。</li></ul><hr><p>未完待续</p>]]></content>
     
     <summary type="html">
     
       
       
-        &lt;h1 id=&quot;什么是OLAP-OLTP&quot;&gt;&lt;a href=&quot;#什么是OLAP-OLTP&quot; class=&quot;headerlink&quot; title=&quot;什么是OLAP/OLTP?&quot;&gt;&lt;/a&gt;什么是OLAP/OLTP?&lt;/h1&gt;&lt;p&gt;联机事务处理：OLTP，全称On-line Transa
+        &lt;p&gt;常见错误总结&lt;/p&gt;&lt;ul&gt;&lt;li&gt;1、开发时仔细检查脚本，避免低级错误，比如缺少逗号，有重复字段，脚本文件保存的不是UTF8无BOM，或不是UNIX格式，Tab没有转为空格等；&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;img src=&quot;/cn/3552/image-2020052621
+      
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>数据质量监控</title>
+    <link href="https://mapan.tech/cn/2408.html"/>
+    <id>https://mapan.tech/cn/2408.html</id>
+    <published>2020-05-24T13:22:27.000Z</published>
+    <updated>2020-05-26T13:57:12.431Z</updated>
+    
+    <content type="html"><![CDATA[<p>数据质量监控，在企业中实际的作用更多的是面对开发人员，例如计算出的结果值出现了明显的异常，一个日常用品的店铺，单个订单金额突破了10万，很明显是异常的订单，虽然有可能真有这样的顾客，但是需要提前预警，以提醒开发人员，这里的数据相比以往变化较大需要核实。否则等业务人员问起来了，一问三不知，很可能要被业务投诉。</p><p>1）单表数据量监控。<br>一张表的记录数在-一个已知的范围内，或者上下浮动不会超过某个阈值。</p><ul><li>SQL 结果：var 数据量 = count（”昨天”（如果设置了时间字段的话）满足“过滤条件”的记录）。</li><li>数值检测：如果数据量不在[数值下限，数值上限]，则触发报警。</li><li>同比增加：如果（（今 天的数据量-上周的数据量）/上周的数据量*100）不在[比例下线，比例上限]，则触发报警。</li><li>环比增加：如果（（今天的数据量 - 昨天的数据量）/昨天的数据量*100）不在[比例下线，比例上限]，则触发报警。</li><li>“阈值配置”的六个数值当中，至少配置-一个阈值.对于没有配置的阈值，不做监控。</li></ul><p>2）单表空值检测<br>某个字段为空的记录数在-一个范围内，或者占总量的百分比在某个阈值范围内</p><ul><li>目标字段：选择要监控的字段，不能选“无”;</li><li>SQL结果：var 异常数据量 = count（”目标字段”为空的记录）;</li><li>单次检测：如果（异常数据量）不在[数值下限，数值上限]，则触发报警</li></ul><p>3）单表重复值检测。<br>一个或多个字段是否满足某些规则。</p><ul><li>目标字段：选择要监控的字段，group by这里的字段列表后，没有重复;</li><li>单次检测：如果（异常数据量）不在[数值下限，数值上限]，则触发报警。</li></ul><p>4）单表值域检测。<br>一个或多个字段没有重复记录。</p><ul><li>目标字段：选择要监控的字段，支持多选。</li><li>检测规则：填写”目标字段”要满足的条件。其中$1表示第一个目标字段，$2 表示第二个目标字段，以此类推。</li><li>阈值配置与”空值检测”相同。</li></ul><p>6）跨表主外键对比</p><ul><li>监控字段和关联字段：需要符合外键约束的两个字段;</li><li>阈值配置与”空值检测”相同。</li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;数据质量监控，在企业中实际的作用更多的是面对开发人员，例如计算出的结果值出现了明显的异常，一个日常用品的店铺，单个订单金额突破了10万，很明显是异常的订单，虽然有可能真有这样的顾客，但是需要提前预警，以提醒开发人员，这里的数据相比以往变化较大需要核实。否则等业务人员问起来了
       
     
     </summary>
@@ -449,29 +470,6 @@
     </summary>
     
       <category term="SQL" scheme="https://mapan.tech/cn/categories/SQL/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>事实表基本概念</title>
-    <link href="https://mapan.tech/cn/b78f.html"/>
-    <id>https://mapan.tech/cn/b78f.html</id>
-    <published>2019-10-10T10:47:16.000Z</published>
-    <updated>2020-05-24T11:12:27.631Z</updated>
-    
-    <content type="html"><![CDATA[<p>在多维数据仓库中，保存度量值的详细值或事实的表称为“事实表”。在事实表中，每个度量值都有一个列，不同事实表将有不同的度量值。</p><p>事实表中的度量主要分为三种：可加、半可加、不可加</p><ul><li>可加的度量<br>言外之意，既可以在任意维度下进行累加，例如订单中的订单金额，商品数量等；</li><li>半可加的度量<br>即为有的时候可以累加，有的时候不可以累加，学生成绩表中的各科目的成绩，针对每个人是可以进行累加，但是全班进行累加，是没有任何意义的；</li><li>不可加的度量<br>即为任何场景下均不可累加，典型的比如比例或者比率，其只针对单行记录有意义，直接累加无意义。</li></ul><p>一致性可以有两层的理解，一是表内部的一致性，二是表与表之间的一致性</p><ul><li>表内部的一致性：<br>在同一个表内部，所有记录的粒度、维度等信息均是一致的，每一列的单位，枚举值等均是一致</li><li>表与表之间的一致性：<br>如果我们在进行多个表的数据合并时，应该保证彼此之间的对于同一事实的计算，是在同一粒度和维度之下。统计口径一致，为了避免歧义，一个度量只有唯一的业务术语，例如一个度量是<strong>注销费用</strong>，或者<strong>退单费用</strong>。这两个业务术语可能描述的是同一个业务含义，但是只能取一个作为标准业务口径。</li></ul>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;在多维数据仓库中，保存度量值的详细值或事实的表称为“事实表”。在事实表中，每个度量值都有一个列，不同事实表将有不同的度量值。&lt;/p&gt;&lt;p&gt;事实表中的度量主要分为三种：可加、半可加、不可加&lt;/p&gt;&lt;ul&gt;&lt;li&gt;可加的度量&lt;br&gt;言外之意，既可以在任意维度下进行累加，例如订单
-      
-    
-    </summary>
-    
-      <category term="数据仓库" scheme="https://mapan.tech/cn/categories/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93/"/>
     
     
   </entry>
